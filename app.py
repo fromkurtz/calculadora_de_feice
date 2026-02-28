@@ -1,14 +1,35 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
 from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
 
-# Como o Vercel apaga arquivos salvos, vamos usar uma lista na memória.
-# Nota: O ranking vai resetar sempre que o site ficar sem acessos.
-ranking_temporario = []
+# Conexão com o banco Neon/Postgres
+def get_db_connection():
+    conn = psycopg2.connect(os.environ.get('POSTGRES_URL'))
+    return conn
+
+# Criar a tabela de ranking se não existir
+def init_db():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS ranking (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL,
+            score INTEGER NOT NULL,
+            date TEXT NOT NULL
+        );
+    ''')
+    conn.commit()
+    cur.close()
+    conn.close()
+
+init_db()
 
 def calculate_score(data):
     score = 0
@@ -27,7 +48,6 @@ def calculate_score(data):
     score += {'crespo': 10000, 'ondulado': 5000, 'liso': 2000}.get(data.get('hair'), 0)
     score += {'escuro': 10000, 'claro': 2000}.get(data.get('eyes'), 0)
     score += {'monoselha': 6000, 'normal': 2000}.get(data.get('eyebrow'), 0)
-
     return int(min(score, 100000))
 
 @app.route('/')
@@ -36,25 +56,32 @@ def index():
 
 @app.route('/api/submit', methods=['POST'])
 def submit_score():
-    global ranking_temporario
     data = request.json
     score = calculate_score(data)
+    name = data.get('name', 'Anônimo')
+    date = datetime.now().strftime('%d/%m/%Y %H:%M')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('INSERT INTO ranking (name, score, date) VALUES (%s, %s, %s)', (name, score, date))
+    conn.commit()
     
-    new_entry = {
-        'name': data.get('name', 'Anônimo'),
-        'score': score,
-        'date': datetime.now().strftime('%d/%m/%Y %H:%M')
-    }
+    # Busca o rank
+    cur.execute('SELECT COUNT(*) FROM ranking WHERE score > %s', (score,))
+    rank = cur.fetchone()[0] + 1
     
-    ranking_temporario.append(new_entry)
-    ranking_temporario.sort(key=lambda x: x['score'], reverse=True)
-    ranking_temporario = ranking_temporario[:10] # Mantém apenas o top 10
-    
-    return jsonify({'score': score, 'rank': 1})
+    cur.close()
+    conn.close()
+    return jsonify({'score': score, 'rank': rank})
 
 @app.route('/api/ranking', methods=['GET'])
 def get_ranking():
-    return jsonify(ranking_temporario)
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute('SELECT name, score, date FROM ranking ORDER BY score DESC LIMIT 10')
+    ranking = cur.fetchall()
+    cur.close()
+    conn.close()
+    return jsonify(ranking)
 
-# Garante que o objeto app seja exportado para o Vercel
 app = app
