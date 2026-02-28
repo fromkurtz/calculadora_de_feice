@@ -66,4 +66,4 @@ def get_ranking():
     return jsonify(load_ranking()[:10])
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
