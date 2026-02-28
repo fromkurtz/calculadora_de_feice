@@ -10,8 +10,17 @@ CORS(app)
 
 # Conexão com o banco Neon/Postgres
 def get_db_connection():
-    conn = psycopg2.connect(os.environ.get('POSTGRES_URL'))
-    return conn
+    url = os.environ.get('POSTGRES_URL')
+    if not url:
+        # Tenta uma alternativa caso a primeira falhe
+        url = os.environ.get('DATABASE_URL')
+    
+    # Adiciona sslmode se não estiver na URL para evitar erro de conexão segura
+    if url and 'sslmode' not in url:
+        separator = '&' if '?' in url else '?'
+        url += f'{separator}sslmode=require'
+        
+    return psycopg2.connect(url)
 
 # Criar a tabela de ranking se não existir
 def init_db():
