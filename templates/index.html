@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Ranking Royal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        .bg-royal { background-color: #4169E1; }
+        .text-royal { color: #4169E1; }
+        .hover-royal:hover { background-color: #2747a1; }
+        body { background-color: #f3f4f6; }
+    </style>
+</head>
+<body class="min-h-screen pb-10">
+    <header class="bg-royal text-white py-8 shadow-xl mb-8">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl font-black uppercase tracking-widest">Nivel de Haitianismo calculator</h1>
+            <p class="mt-2 opacity-90">O algoritmo definitivo para medir a feiura</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 grid lg:grid-cols-5 gap-8">
+        <div id="recordModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <div class="bg-white rounded-3xl max-w-2xl w-full p-10 text-center shadow-[0_0_50px_rgba(65,105,225,0.5)] transform scale-90 transition-all duration-300 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-3 bg-royal"></div>
+                
+                <div class="mb-6">
+                    <i class="fas fa-crown text-7xl text-yellow-500 animate-bounce"></i>
+                </div>
+                
+                <h2 class="text-4xl font-black text-gray-800 mb-2 uppercase tracking-tighter">NOVO RECORDE MUNDIAL!</h2>
+                <p class="text-xl text-gray-600 mb-8">Parabéns! Você alcançou o topo absoluto do nosso ranking de ser humano mais bugio que beira ao ridiculo.</p>
+                
+                <div class="bg-royal/10 rounded-2xl p-6 mb-8 inline-block">
+                    <span class="block text-sm text-royal font-bold uppercase tracking-widest">Sua Pontuação Histórica</span>
+                    <span id="modalScore" class="text-6xl font-black text-royal">0</span>
+                </div>
+
+                <button onclick="closeModal()" class="w-full bg-royal text-white font-bold py-4 rounded-xl hover-royal transition-all text-xl shadow-lg">
+                    CONTINUAR SENDO O MELHOR
+                </button>
+                
+                <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-royal/5 rounded-full blur-3xl"></div>
+        </div>
+</div>
+        <div class="lg:col-span-3 bg-white p-8 rounded-2xl shadow-lg border-t-4 border-royal">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+                <i class="fas fa-user-edit text-royal"></i> Seus Dados
+            </h2>
+            
+            <form id="scoreForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-bold text-gray-600 uppercase">Nome Completo</label>
+                    <input type="text" id="name" required class="w-full mt-1 p-3 border-2 rounded-xl focus:border-royal outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 uppercase">Peso (kg)</label>
+                    <input type="number" id="weight" step="0.1" required class="w-full mt-1 p-3 border-2 rounded-xl focus:border-royal outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 uppercase">Altura (m)</label>
+                    <input type="number" id="height" step="0.01" required class="w-full mt-1 p-3 border-2 rounded-xl focus:border-royal outline-none" placeholder="Ex: 1.75">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 uppercase">Tom de Pele</label>
+                    <select id="skin_tone" class="w-full mt-1 p-3 border-2 rounded-xl focus:border-royal outline-none">
+                        <option value="muito_claro">Muito Claro</option>
+                        <option value="claro">Claro</option>
+                        <option value="medio">Médio</option>
+                        <option value="escuro">Escuro</option>
+                        <option value="muito_escuro">Muito Escuro</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 uppercase">Nariz</label>
+                    <select id="nose" class="w-full mt-1 p-3 border-2 rounded-xl">
+                        <option value="pequeno">Pequeno</option>
+                        <option value="medio">Médio</option>
+                        <option value="gigante">Gigante</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 uppercase">Orelhas</label>
+                    <select id="ear" class="w-full mt-1 p-3 border-2 rounded-xl">
+                        <option value="invisivel">Invisível</option>
+                        <option value="media">Média</option>
+                        <option value="dumbo">Dumbo</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 uppercase">Lábios</label>
+                    <select id="lips" class="w-full mt-1 p-3 border-2 rounded-xl">
+                        <option value="pequenos">Pequenos</option>
+                        <option value="normal">Normais</option>
+                        <option value="salsicha">Salsicha</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 uppercase">Cabelo</label>
+                    <select id="hair" class="w-full mt-1 p-3 border-2 rounded-xl">
+                        <option value="liso">Liso</option>
+                        <option value="ondulado">Ondulado</option>
+                        <option value="crespo">Crespo</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-600 uppercase">Cor dos Olhos</label>
+                    <select id="eyes" class="w-full mt-1 p-3 border-2 rounded-xl">
+                        <option value="claro">Claro</option>
+                        <option value="escuro">Escuro</option>
+                    </select>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-bold text-gray-600 uppercase">Sobrancelha</label>
+                    <select id="eyebrow" class="w-full mt-1 p-3 border-2 rounded-xl">
+                        <option value="normal">Normal</option>
+                        <option value="monoselha">Monoselha</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="md:col-span-2 bg-royal text-white font-black py-4 rounded-xl hover-royal transform hover:scale-[1.02] transition shadow-lg uppercase tracking-wider">
+                    Calcular Score Máximo
+                </button>
+            </form>
+        </div>
+
+        <div class="lg:col-span-2 space-y-6">
+            <div id="resultBox" class="hidden bg-royal text-white p-6 rounded-2xl shadow-lg text-center animate-bounce">
+                <p class="text-sm uppercase font-bold opacity-80">Sua Pontuação</p>
+                <h3 id="finalScore" class="text-5xl font-black">0</h3>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-gray-800">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-trophy text-yellow-500"></i> Hall da Fama (Top 10)
+                </h2>
+                <div id="rankingList" class="space-y-3">
+                    </div>
+            </div>
+        </div>
+    </main>
+
+<script>
+    // Função para fechar o Modal
+    function closeModal() {
+        const modal = document.getElementById('recordModal');
+        modal.classList.add('hidden');
+    }
+
+    // Função para buscar o ranking e atualizar a tela
+    async function loadRanking() {
+        try {
+            const r = await fetch('/api/ranking');
+            const data = await r.json();
+            const list = document.getElementById('rankingList');
+            
+            // Salva o recorde atual para comparação global
+            window.currentRecord = data.length > 0 ? data[0].score : 0;
+
+            if (data.length === 0) {
+                list.innerHTML = '<p class="text-gray-400 text-center py-4">Nenhum registro ainda.</p>';
+                return;
+            }
+
+            list.innerHTML = data.map((user, i) => `
+                <div class="flex justify-between items-center p-3 ${i === 0 ? 'bg-yellow-50 border-yellow-200 shadow-sm' : 'bg-gray-50'} border rounded-lg transition-all">
+                    <div class="flex items-center gap-3">
+                        <span class="font-bold text-royal">${i + 1}º</span>
+                        <span class="font-medium text-gray-700">${user.name}</span>
+                        ${i === 0 ? '<i class="fas fa-crown text-yellow-500"></i>' : ''}
+                    </div>
+                    <span class="font-mono font-bold text-gray-900">${user.score.toLocaleString()} pts</span>
+                </div>
+            `).join('');
+        } catch (err) {
+            console.error("Erro ao carregar ranking:", err);
+        }
+    }
+
+    // Função para disparar a festa e o Pop-up
+    function celebrate(score) {
+        const modal = document.getElementById('recordModal');
+        document.getElementById('modalScore').innerText = score.toLocaleString();
+        modal.classList.remove('hidden');
+        
+        const duration = 5 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+        const interval = setInterval(function() {
+            const timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) return clearInterval(interval);
+
+            const particleCount = 50 * (timeLeft / duration);
+            confetti({ ...defaults, particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 } });
+        }, 250);
+    }
+
+    // Evento de envio do formulário
+    document.getElementById('scoreForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = {};
+        // Captura todos os campos do formulário
+        e.target.querySelectorAll('input, select').forEach(el => formData[el.id] = el.value);
+
+        const currentTopScore = window.currentRecord || 0;
+
+        try {
+            const r = await fetch('/api/submit', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            });
+
+            const res = await r.json();
+            
+            // Se for recorde, celebra!
+            if (res.score > currentTopScore) {
+                celebrate(res.score);
+            }
+
+            // Mostra o resultado lateral
+            const box = document.getElementById('resultBox');
+            box.classList.remove('hidden');
+            document.getElementById('finalScore').innerText = res.score.toLocaleString();
+            
+            // Atualiza a lista e limpa o formulário
+            loadRanking();
+            e.target.reset();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        } catch (err) {
+            alert("Erro ao enviar dados para o servidor.");
+        }
+    };
+
+    // Carrega o ranking assim que a página abre
+    loadRanking();
+</script>
+</body>
+</html>
