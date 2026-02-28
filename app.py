@@ -87,7 +87,8 @@ def submit_score():
 def get_ranking():
     conn = get_db_connection()
     cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute('SELECT name, score, date FROM ranking ORDER BY score DESC LIMIT 10')
+    # REMOVIDO O "LIMIT 10" PARA PEGAR TODOS OS REGISTROS
+    cur.execute('SELECT name, score, date FROM ranking ORDER BY score DESC')
     ranking = cur.fetchall()
     cur.close()
     conn.close()
